@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FactoryTrack | MetalTech</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ====================================================
+     TELA DE LOGIN
+     ==================================================== -->
+<div id="tela-login">
+  <div class="login-card">
+
+    <!-- Painel Esquerdo: Branding -->
+    <div class="login-left">
+      <div class="deco-circles"></div>
+      <div class="login-left-content">
+        <div class="tracker-logo-wrap">
+          <div class="tracker-icon">🏭</div>
+        </div>
+        <div class="tracker-name">
+          The Trackers
+          <span>MetalTech Solutions</span>
+        </div>
+        <p class="login-left-tagline">
+          Controle total da sua linha de produção industrial
+        </p>
+      </div>
+    </div>
+
+    <!-- Painel Direito: Formulário -->
+    <div class="login-right">
+      <div class="login-brand-right">
+        <span class="login-brand-icon">🏗️</span>
+        <div class="login-brand-title">MetalTech</div>
+        <div class="login-brand-sub">Sistema de Registro e Acompanhamento de Produção</div>
+      </div>
+
+      <div class="login-form">
+        <div class="login-erro" id="login-erro"></div>
+
+        <div class="login-field">
+          <span class="login-field-icon">👤</span>
+          <input type="email" id="l-email" placeholder="Email" />
+        </div>
+
+        <div class="login-field">
+          <span class="login-field-icon">🔒</span>
+          <input type="password" id="l-senha" placeholder="Senha"
+                 onkeydown="if(event.key==='Enter') fazerLogin()" />
+        </div>
+
+        <button class="btn-login" id="btn-login" onclick="fazerLogin()">
+          ENTRAR
+        </button>
+
+        <div class="login-hint">
+          Rode <strong>node seed.js</strong> para criar a base de dados
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ====================================================
+     APP PRINCIPAL (após login)
+     ==================================================== -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-icon">🏭</div>
+        <span class="sidebar-brand-name">FactoryTrack</span>
+      </div>
+      <div class="user-chip" id="user-info">
+        <div class="user-avatar" id="sb-avatar">—</div>
+        <div class="user-meta">
+          <div class="user-name" id="sb-nome">—</div>
+          <span class="user-role" id="sb-perfil">—</span>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <!-- Menus exclusivos do Administrativo -->
+      <div class="nav-section-label nav-only-admin">Principal</div>
+      <button class="nav-item nav-only-admin" data-page="dashboard">
+        <span class="nav-icon">📊</span>
+        <span>Dashboard</span>
+      </button>
+      <button class="nav-item nav-only-admin" data-page="pedidos">
+        <span class="nav-icon">📦</span>
+        <span>Ordens de Produção</span>
+      </button>
+
+      <div class="nav-section-label nav-only-admin">Cadastros</div>
+      <button class="nav-item nav-only-admin" data-page="produtos">
+        <span class="nav-icon">⚙️</span>
+        <span>Peças e Produtos</span>
+      </button>
+      <button class="nav-item nav-only-admin" data-page="clientes">
+        <span class="nav-icon">🏢</span>
+        <span>Clientes</span>
+      </button>
+
+      <div class="nav-section-label nav-only-admin">Gestão</div>
+      <button class="nav-item nav-only-admin" data-page="equipe">
+        <span class="nav-icon">👥</span>
+        <span>Equipe / Usuários</span>
+      </button>
+
+      <!-- Menus exclusivos do Líder de Produção -->
+      <div class="nav-section-label nav-only-lider">Produção</div>
+      <button class="nav-item nav-only-lider" data-page="pedidos">
+        <span class="nav-icon">📦</span>
+        <span>Ordens de Produção</span>
+      </button>
+      <button class="nav-item nav-only-lider" data-page="produtos">
+        <span class="nav-icon">⚙️</span>
+        <span>Peças e Produtos</span>
+      </button>
+
+      <div class="nav-section-label nav-only-lider">Acompanhamento</div>
+      <button class="nav-item nav-only-lider" data-page="relatorios">
+        <span class="nav-icon">🔧</span>
+        <span>Operações</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <span class="version-tag">v2.0.0</span>
+      <button class="btn-logout" onclick="sair()">Sair</button>
+    </div>
+  </aside>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="main-content">
+
+    <!-- DASHBOARD -->
+    <section id="pg-dashboard" class="page active">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h2>Dashboard</h2>
+          <div class="page-header-sub">Visão geral da produção</div>
+        </div>
+        <button class="btn btn-ghost" onclick="carregarDashboard()">↻ Atualizar</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-label">Receita Mensal</div>
+          <div class="stat-value" id="stat-receita">R$ --</div>
+          <div class="stat-trend">▲ +12% vs mês passado</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-label">Pedidos Finalizados</div>
+          <div class="stat-value" id="stat-pedidos-produzidos">--</div>
+          <div class="stat-trend neutral">últimos 30 dias</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🏢</div>
+          <div class="stat-label">Clientes Ativos</div>
+          <div class="stat-value" id="stat-clientes-ativos">--</div>
+          <div class="stat-trend neutral">cadastrados no sistema</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-label">Pendências</div>
+          <div class="stat-value" id="stat-pendencias">--</div>
+          <div class="stat-trend neutral">ordens não finalizadas</div>
+        </div>
+      </div>
+
+      <div class="dashboard-row">
+        <!-- Produção Hoje -->
+        <div class="prod-today">
+          <div class="prod-today-header">
+            <h3>Produção Hoje</h3>
+            <span class="meta-badge">Meta: 500 peças</span>
+          </div>
+          <div class="prod-today-body">
+            <div class="prod-number" id="producao-hoje">0</div>
+            <div class="prod-sub" id="variacao-producao">ordens finalizadas hoje</div>
+            <div class="goal-bar-label">
+              <span>Progresso</span>
+              <span>65%</span>
+            </div>
+            <div class="goal-bar">
+              <div class="goal-fill" style="width: 65%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pedidos Recentes -->
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Pedidos Recentes</h3>
+            <button class="btn btn-primary btn-sm" onclick="abrirOrdem()">+ Nova OP</button>
+          </div>
+          <div class="table-wrap" id="tabela-pedidos-recentes">
+            <div class="loading">Carregando...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRODUTOS -->
+    <section id="pg-produtos" class="page">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h2>Catálogo de Produtos</h2>
+          <div class="page-header-sub">Peças e componentes metálicos</div>
+        </div>
+        <button class="btn btn-primary" onclick="abrirProduto()">+ Novo Produto</button>
+      </div>
+      <div class="panel">
+        <div class="table-wrap" id="tbl-produtos">
+          <div class="loading">Carregando...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PEDIDOS -->
+    <section id="pg-pedidos" class="page">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h2>Ordens de Produção</h2>
+          <div class="page-header-sub">Gerencie e acompanhe as OPs</div>
+        </div>
+        <button class="btn btn-primary" onclick="abrirOrdem()">+ Nova OP</button>
+      </div>
+      <div class="panel" id="pedidos-container">
+        <div class="loading">Carregando...</div>
+      </div>
+    </section>
+
+    <!-- CLIENTES -->
+    <section id="pg-clientes" class="page">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h2>Clientes B2B</h2>
+          <div class="page-header-sub">Empresas parceiras e solicitantes</div>
+        </div>
+        <button class="btn btn-primary" onclick="abrirCliente()">+ Nova Empresa</button>
+      </div>
+      <div class="panel">
+        <div class="search-row">
+          <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="busca-cli" placeholder="Buscar empresa..." />
+          </div>
+        </div>
+        <div class="table-wrap" id="tbl-clientes">
+          <div class="loading">Carregando...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EQUIPE / USUÁRIOS (apenas admin) -->
+    <section id="pg-equipe" class="page">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h2>Equipe / Usuários</h2>
+          <div class="page-header-sub">Gerencie os colaboradores e acessos</div>
+        </div>
+        <button class="btn btn-primary" onclick="abrirUsuario()">+ Novo Usuário</button>
+      </div>
+      <div class="panel">
+        <div class="table-wrap" id="tbl-usuarios">
+          <div class="loading">Carregando...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- OPERAÇÕES (Líder de Produção) -->
+    <section id="pg-relatorios" class="page">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h2>Operações</h2>
+          <div class="page-header-sub">Painel de controle do chão de fábrica</div>
+        </div>
+        <button class="btn btn-ghost" onclick="carregarOperacoes()">↻ Atualizar</button>
+      </div>
+
+      <!-- Cards de resumo -->
+      <div class="ops-summary-grid" id="ops-summary">
+        <div class="ops-card ops-card-blue">
+          <div class="ops-card-icon">⏳</div>
+          <div class="ops-card-info">
+            <div class="ops-card-value" id="ops-aguardando">—</div>
+            <div class="ops-card-label">Aguardando Início</div>
+          </div>
+        </div>
+        <div class="ops-card ops-card-orange">
+          <div class="ops-card-icon">⚙️</div>
+          <div class="ops-card-info">
+            <div class="ops-card-value" id="ops-em-producao">—</div>
+            <div class="ops-card-label">Em Produção</div>
+          </div>
+        </div>
+        <div class="ops-card ops-card-green">
+          <div class="ops-card-icon">✅</div>
+          <div class="ops-card-info">
+            <div class="ops-card-value" id="ops-finalizadas">—</div>
+            <div class="ops-card-label">Finalizadas Hoje</div>
+          </div>
+        </div>
+        <div class="ops-card ops-card-red">
+          <div class="ops-card-icon">🚨</div>
+          <div class="ops-card-info">
+            <div class="ops-card-value" id="ops-atrasadas">—</div>
+            <div class="ops-card-label">Com Atraso</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ops-body">
+
+        <!-- Painel: OPs Urgentes / Em Andamento -->
+        <div class="panel ops-panel-main">
+          <div class="panel-header">
+            <h3>⚙️ Em Produção Agora</h3>
+            <span class="ops-live-dot"><span class="ops-live-pulse"></span>ao vivo</span>
+          </div>
+          <div id="ops-em-andamento-lista">
+            <div class="loading">Carregando...</div>
+          </div>
+        </div>
+
+        <!-- Painel lateral: Próximas a vencer -->
+        <div class="panel ops-panel-side">
+          <div class="panel-header">
+            <h3>🔥 Prazo Crítico</h3>
+          </div>
+          <div id="ops-criticas-lista">
+            <div class="loading">Carregando...</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Painel: Todas as OPs do dia / fila completa -->
+      <div class="panel" style="margin-top:1.5rem">
+        <div class="panel-header">
+          <h3>📋 Fila de Produção Completa</h3>
+          <div class="ops-filter-row">
+            <button class="ops-filter-btn active" onclick="filtrarFila(this,'todos')">Todas</button>
+            <button class="ops-filter-btn" onclick="filtrarFila(this,'Aguardando Produção')">Aguardando</button>
+            <button class="ops-filter-btn" onclick="filtrarFila(this,'Em Produção')">Em Produção</button>
+            <button class="ops-filter-btn" onclick="filtrarFila(this,'Finalizado')">Finalizadas</button>
+          </div>
+        </div>
+        <div class="table-wrap" id="ops-fila-tabela">
+          <div class="loading">Carregando...</div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<!-- ====================================================
+     MODAIS
+     ==================================================== -->
+
+<!-- Modal: Produto -->
+<div id="m-produto" class="modal-bg">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="m-produto-t">Novo Produto</h3>
+      <button class="modal-close" onclick="fechar('m-produto')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="p-id" />
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nome da Peça *</label>
+          <input id="p-nome" placeholder="Ex: Parafuso Sextavado" />
+        </div>
+        <div class="form-group">
+          <label>Código</label>
+          <input id="p-codigo" placeholder="Ex: PF-SX-01" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Descrição</label>
+        <textarea id="p-desc" rows="3" placeholder="Descrição técnica da peça..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fechar('m-produto')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarProduto()">Salvar Produto</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Cliente -->
+<div id="m-cliente" class="modal-bg">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="m-cli-t">Nova Empresa</h3>
+      <button class="modal-close" onclick="fechar('m-cliente')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="c-id" />
+      <div class="form-row">
+        <div class="form-group">
+          <label>Razão Social *</label>
+          <input id="c-nome" placeholder="Nome da empresa" />
+        </div>
+        <div class="form-group">
+          <label>Telefone *</label>
+          <input id="c-tel" placeholder="(11) 99999-9999" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Rua</label>
+          <input id="c-rua" placeholder="Nome da rua" />
+        </div>
+        <div class="form-group">
+          <label>Número</label>
+          <input id="c-num" placeholder="Nº" />
+        </div>
+      </div>
+      <div class="form-row-3">
+        <div class="form-group">
+          <label>Bairro</label>
+          <input id="c-bairro" />
+        </div>
+        <div class="form-group">
+          <label>Cidade</label>
+          <input id="c-cidade" />
+        </div>
+        <div class="form-group">
+          <label>CEP</label>
+          <input id="c-cep" placeholder="00000-000" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Observações</label>
+        <input id="c-obs" placeholder="Informações adicionais..." />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fechar('m-cliente')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarCliente()">Salvar Empresa</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Ordem de Produção -->
+<div id="m-ordem" class="modal-bg">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Nova Ordem de Produção</h3>
+      <button class="modal-close" onclick="fechar('m-ordem')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Cliente *</label>
+        <select id="ordem-cli">
+          <option value="">Selecione o cliente</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Produto *</label>
+        <select id="ordem-prod">
+          <option value="">Selecione o produto</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Quantidade *</label>
+          <input type="number" id="ordem-qtd" min="1" value="100" />
+        </div>
+        <div class="form-group">
+          <label>Prazo de Entrega *</label>
+          <input type="date" id="ordem-prazo" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fechar('m-ordem')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarOrdem()">Gerar OP</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Atualizar Status -->
+<div id="m-status" class="modal-bg">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Atualizar Status da OP</h3>
+      <button class="modal-close" onclick="fechar('m-status')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="st-id" />
+      <div class="form-group">
+        <label>Etapa de Fabricação</label>
+        <select id="st-val">
+          <option value="Aguardando Produção">⏳ Aguardando Produção</option>
+          <option value="Em Produção">⚙️ Em Produção</option>
+          <option value="Finalizado">✅ Finalizado</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fechar('m-status')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarStatus()">Atualizar Status</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Usuário -->
+<div id="m-usuario" class="modal-bg">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Novo Usuário</h3>
+      <button class="modal-close" onclick="fechar('m-usuario')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nome *</label>
+          <input id="u-nome" placeholder="Nome completo" />
+        </div>
+        <div class="form-group">
+          <label>Perfil</label>
+          <select id="u-perfil">
+            <option>Administrativo</option>
+            <option>Líder de Produção</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>E-mail *</label>
+        <input type="email" id="u-email" placeholder="email@empresa.com" />
+      </div>
+      <div class="form-group">
+        <label>Senha *</label>
+        <input type="password" id="u-senha" placeholder="••••••••" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fechar('m-usuario')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarUsuario()">Criar Usuário</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast de notificações -->
+<div id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
